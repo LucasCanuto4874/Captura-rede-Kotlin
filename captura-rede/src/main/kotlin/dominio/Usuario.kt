@@ -20,10 +20,9 @@ class Usuario {
         email = novoEmail
     }
 
-    fun setSenha(novoEmail: String){
-        email = novoEmail
+    fun setSenha(novoSenha: String){
+        senha = novoSenha
     }
-
 
     fun getId():Int{
         return id
