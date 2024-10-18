@@ -1,42 +1,19 @@
 package dominio
 
 class Usuario {
-    var id: Int = 0
-
-    var nome: String = ""
-        private set
-
     var email: String = ""
         private set
 
     var senha: String = ""
+        private set
 
-
-    fun setNome(novoNome: String){
-        nome = novoNome
-    }
-
-    fun setEmail(novoEmail: String){
+    fun setEmail(novoEmail: String): Usuario{
         email = novoEmail
+        return this
     }
 
-    fun setSenha(novoSenha: String){
+    fun setSenha(novoSenha: String): Usuario{
         senha = novoSenha
-    }
-
-    fun getId():Int{
-        return id
-    }
-
-    fun getNome(): String{
-        return nome
-    }
-
-    fun getEmail(): String{
-        return email
-    }
-
-    fun getSenha(): String{
-        return senha
+        return this
     }
 }

@@ -35,26 +35,4 @@ class Log {
         fkAlerta = novoAlerta
     }
 
-    fun getId(): Int{
-        return id
-    }
-    fun getfkComponente(): Int{
-        return fkComponente
-    }
-    fun getfkDispositivo(): Int{
-        return fkDispositivo
-    }
-    fun getValor(): Int{
-        return valor
-    }
-    fun getDataHora(): String{
-        return dataHora
-    }
-    fun getDescricao(): String{
-        return descricao
-    }
-    fun getAlerta(): Int{
-        return fkAlerta
-    }
-
 }
