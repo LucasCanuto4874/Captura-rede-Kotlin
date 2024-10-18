@@ -1,6 +1,5 @@
 package repositorio
 
-import dominio.Dispositivo
 import dominio.Usuario
 import org.apache.commons.dbcp2.BasicDataSource
 import org.springframework.jdbc.core.JdbcTemplate
@@ -15,7 +14,7 @@ class DispositivoRepositorio {
         datasource.driverClassName = "com.mysql.cj.jdbc.Driver"
         datasource.url = "jdbc:mysql://localhost:3306/novascan"
         datasource.username = "root"
-        datasource.password = "CivicSi2007"
+        datasource.password = "0105"
         jdbcTemplate = JdbcTemplate(datasource)
     }
 

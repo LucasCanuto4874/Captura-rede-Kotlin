@@ -11,10 +11,7 @@ open class Main {
     companion object {
         @JvmStatic fun main(args: Array<String>) {
 
-
-
-            fun main() {
-
+            
                 val repositorioUsuario = UsuarioRepositorio()
                 repositorioUsuario.configurar()
                 val repositorioDispositivo = DispositivoRepositorio()
@@ -26,7 +23,6 @@ open class Main {
                 val looca = Looca()
 
                 while(true){
-
 
                     print("""
             Captura de Rede NovaScan!
@@ -62,7 +58,6 @@ open class Main {
 
                             val placaRede = looca.rede.grupoDeInterfaces.interfaces
                             var nome = ""
-                            print("Cadastrando componente")
                             for (i in placaRede){
                                 if (i.bytesRecebidos > 1 && i.bytesEnviados > 1){
                                     nome = i.nome
@@ -70,18 +65,14 @@ open class Main {
                                 }
                             }
 
-
                             repositorioComponente.inserirComponente(ultimoIdMaquina,nome)
 
 
-                            print("Capturando dados da placa")
+                            println("Capturando dados da placa")
                             val ultimoComponente = repositorioComponente.buscarUltimoComponente(ultimoIdMaquina)
 
-                            print("Capturando dados")
-
                             while (true){
-
-                                val interfacePrincipal = placaRede.firstOrNull { it.nome.contains("wlan1") } ?: placaRede[0]
+                                val interfacePrincipal = placaRede.firstOrNull { it.nome.contains(nome) } ?: placaRede[0]
                                 val bytesEnviados = interfacePrincipal.bytesEnviados
                                 val bytesRecebidos = interfacePrincipal.bytesRecebidos
                                 val BytesEnvConvertidos = bytesEnviados / (1024 * 1024) // Conversão para MB
@@ -90,8 +81,7 @@ open class Main {
                                 repositorioLog.capturaBytesRecebidos(BytesReConvertidos, ultimoComponente, ultimoIdMaquina)
                                 println("Exibindo Bytes Recebidos: ${BytesReConvertidos}MB")
                                 println("Exibindo Bytes Enviados: ${BytesEnvConvertidos}MB")
-                                Thread.sleep(5000)
-
+                                Thread.sleep(1000)
                             }
                         }
                         2 ->{
@@ -99,7 +89,7 @@ open class Main {
                         }
                     }
                 }
-            }
+
 
         }
     }
