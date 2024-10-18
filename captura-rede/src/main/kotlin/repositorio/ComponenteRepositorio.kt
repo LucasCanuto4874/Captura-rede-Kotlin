@@ -11,13 +11,13 @@ class ComponenteRepositorio {
         datasource.driverClassName = "com.mysql.cj.jdbc.Driver"
         datasource.url = "jdbc:mysql://localhost:3306/novascan"
         datasource.username = "root"
-        datasource.password = "0105"
+        datasource.password = "CivicSi2007"
         jdbcTemplate = JdbcTemplate(datasource)
     }
 
     fun inserirComponente(fkDispositivo: Int, nome: String): Boolean{
         val qtdLinhasInseridas = jdbcTemplate.update(
-            "INSERT INTO componente (fkDispositivo, nome, tipo) VALUES (?, ?, 'Placa de Rede')",
+            "INSERT INTO componentes (fkDispositivo, nome, tipo) VALUES (?, ?, 'Placa de Rede')",
             fkDispositivo,
             nome
         )

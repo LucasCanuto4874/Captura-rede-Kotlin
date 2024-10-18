@@ -11,26 +11,30 @@ class LogRepositorio {
         datasource.driverClassName = "com.mysql.cj.jdbc.Driver"
         datasource.url = "jdbc:mysql://localhost:3306/novascan"
         datasource.username = "root"
-        datasource.password = "0105"
+        datasource.password = "CivicSi2007"
         jdbcTemplate = JdbcTemplate(datasource)
     }
 
-    fun capturaBytesEnviados(bytesEnviados: Int, fkComponente: Int, fkDispositivo: Int): Boolean{
+    fun capturaBytesEnviados(bytesEnviados: Long, fkComponente: Int, fkDispositivo: Int): Boolean{
+        val tempo = java.time.LocalDateTime.now()
         val qtdLinhasInseridas = jdbcTemplate.update(
-            "INSERT INTO componente (valor, dataHora, descricao, fkComponente, fkDispositivo) VALUES (?, " +
-                    "current_timestamp(), 'BytesEnviados', ?, ?)",
+            "INSERT INTO log (valor, dataHora, descricao, fkComponente, fkDispositivo) VALUES (?, ?" +
+                    ", 'BytesEnviados', ?, ?)",
             bytesEnviados,
+            tempo,
             fkComponente,
             fkDispositivo
         )
         return qtdLinhasInseridas > 0
     }
 
-    fun capturaBytesRecebidos(bytesEnviados: Int, fkComponente: Int, fkDispositivo: Int): Boolean{
+    fun capturaBytesRecebidos(bytesRecebidos: Long, fkComponente: Int, fkDispositivo: Int): Boolean{
+        val tempo = java.time.LocalDateTime.now()
         val qtdLinhasInseridas = jdbcTemplate.update(
-            "INSERT INTO componente (valor, dataHora, descricao, fkComponente, fkDispositivo) VALUES (?, " +
-                    "current_timestamp(), 'BytesRecebidos', ?, ?)",
-            bytesEnviados,
+            "INSERT INTO log (valor, dataHora, descricao, fkComponente, fkDispositivo) VALUES (?, ?," +
+                    "'BytesRecebidos', ?, ?)",
+            bytesRecebidos,
+            tempo,
             fkComponente,
             fkDispositivo
         )

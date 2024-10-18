@@ -14,7 +14,7 @@ class UsuarioRepositorio {
             datasource.driverClassName = "com.mysql.cj.jdbc.Driver"
             datasource.url = "jdbc:mysql://localhost:3306/novascan"
             datasource.username = "root"
-            datasource.password = "0105"
+            datasource.password = "CivicSi2007"
             jdbcTemplate = JdbcTemplate(datasource)
     }
 
