@@ -12,7 +12,7 @@ class UsuarioRepositorio {
     fun configurar() {
             val datasource = BasicDataSource()
             datasource.driverClassName = "com.mysql.cj.jdbc.Driver"
-            datasource.url = "jdbc:mysql://54.166.119.68:3306/novaScan"
+            datasource.url = "jdbc:mysql://44.211.223.18:3306/novaScan"
             datasource.username = "root"
             datasource.password = "urubu100"
             jdbcTemplate = JdbcTemplate(datasource)
