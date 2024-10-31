@@ -12,9 +12,9 @@ class DispositivoRepositorio {
     fun configurar() {
         val datasource = BasicDataSource()
         datasource.driverClassName = "com.mysql.cj.jdbc.Driver"
-        datasource.url = "jdbc:mysql://44.211.223.18:3306/novaScan"
+        datasource.url = "jdbc:mysql://localhost/novascan"
         datasource.username = "root"
-        datasource.password = "urubu100"
+        datasource.password = "0105"
         jdbcTemplate = JdbcTemplate(datasource)
     }
 

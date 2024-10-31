@@ -9,15 +9,15 @@ class ComponenteRepositorio {
     fun configurar() {
         val datasource = BasicDataSource()
         datasource.driverClassName = "com.mysql.cj.jdbc.Driver"
-        datasource.url = "jdbc:mysql://44.211.223.18:3306/novaScan"
+        datasource.url = "jdbc:mysql://localhost/novascan"
         datasource.username = "root"
-        datasource.password = "urubu100"
+        datasource.password = "0105"
         jdbcTemplate = JdbcTemplate(datasource)
     }
 
     fun inserirComponente(fkDispositivo: Int, nome: String): Boolean{
         val qtdLinhasInseridas = jdbcTemplate.update(
-            "INSERT INTO componentes (fkDispositivo, nome, tipo) VALUES (?, ?, 'Placa de Rede')",
+            "INSERT INTO componente (fkDispositivo, nome, tipo) VALUES (?, ?, 'Placa de Rede')",
             fkDispositivo,
             nome
         )
@@ -27,7 +27,7 @@ class ComponenteRepositorio {
 
     fun buscarUltimoComponente(fkDispositivo: Int): Int{
         val idComponente = jdbcTemplate.queryForObject(
-            "SELECT max(id) FROM componentes WHERE fkDispositivo = ?",
+            "SELECT max(id) FROM componente WHERE fkDispositivo = ?",
             Int::class.java,
             fkDispositivo,
         )

@@ -9,16 +9,16 @@ class LogRepositorio {
     fun configurar() {
         val datasource = BasicDataSource()
         datasource.driverClassName = "com.mysql.cj.jdbc.Driver"
-        datasource.url = "jdbc:mysql://44.211.223.18:3306/novaScan"
+        datasource.url = "jdbc:mysql://localhost/novascan"
         datasource.username = "root"
-        datasource.password = "urubu100"
+        datasource.password = "0105"
         jdbcTemplate = JdbcTemplate(datasource)
     }
 
     fun capturaBytesEnviados(bytesEnviados: Long, fkComponente: Int, fkDispositivo: Int): Boolean{
         val tempo = java.time.LocalDateTime.now()
         val qtdLinhasInseridas = jdbcTemplate.update(
-            "INSERT INTO log (valor, dataHora, descricao, fkComponente, fkDispositivo) VALUES (?, ?" +
+            "INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES (?, 'MB', ?" +
                     ", 'BytesEnviados', ?, ?)",
             bytesEnviados,
             tempo,
@@ -31,7 +31,7 @@ class LogRepositorio {
     fun capturaBytesRecebidos(bytesRecebidos: Long, fkComponente: Int, fkDispositivo: Int): Boolean{
         val tempo = java.time.LocalDateTime.now()
         val qtdLinhasInseridas = jdbcTemplate.update(
-            "INSERT INTO log (valor, dataHora, descricao, fkComponente, fkDispositivo) VALUES (?, ?," +
+            "INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES (?, 'MB' ?," +
                     "'BytesRecebidos', ?, ?)",
             bytesRecebidos,
             tempo,
