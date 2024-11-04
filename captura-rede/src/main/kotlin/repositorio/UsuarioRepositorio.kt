@@ -1,9 +1,6 @@
 package repositorio
 
-import dominio.Usuario
-import io.github.cdimascio.dotenv.Dotenv
-import org.apache.commons.dbcp2.BasicDataSource
-import org.springframework.jdbc.core.JdbcTemplate
+import config.DatabaseConfig
 
 
 class UsuarioRepositorio {

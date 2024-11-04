@@ -1,5 +1,7 @@
 package repositorio
 
+import config.DatabaseConfig
+
 class ComponenteRepositorio {
 
     private val jdbcTemplate = DatabaseConfig.jdbcTemplate
@@ -16,7 +18,7 @@ class ComponenteRepositorio {
 
     fun buscarUltimoComponente(fkDispositivo: Int): Int{
         val idComponente = jdbcTemplate.queryForObject(
-            "SELECT max(id) FROM componente WHERE fkDispositivo = ?",
+            "SELECT id FROM ultimoComponente WHERE tipo = 'Placa de Rede' AND fkDispositivo = ?",
             Int::class.java,
             fkDispositivo,
         )
