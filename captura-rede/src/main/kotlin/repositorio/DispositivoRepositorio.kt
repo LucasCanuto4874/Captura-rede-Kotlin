@@ -1,22 +1,14 @@
 package repositorio
 
 import dominio.Usuario
+import io.github.cdimascio.dotenv.Dotenv
 import org.apache.commons.dbcp2.BasicDataSource
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForObject
 
 class DispositivoRepositorio {
 
-    lateinit var jdbcTemplate: JdbcTemplate
-
-    fun configurar() {
-        val datasource = BasicDataSource()
-        datasource.driverClassName = "com.mysql.cj.jdbc.Driver"
-        datasource.url = "jdbc:mysql://localhost/novascan"
-        datasource.username = "root"
-        datasource.password = "0105"
-        jdbcTemplate = JdbcTemplate(datasource)
-    }
+    private val jdbcTemplate = DatabaseConfig.jdbcTemplate
 
     fun buscarUltimoDispositivo(fkEmpresa: Int): Int{
         val ultimoDispositivo = jdbcTemplate.queryForObject(

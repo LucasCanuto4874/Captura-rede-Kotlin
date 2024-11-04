@@ -13,13 +13,9 @@ open class Main {
 
 
                 val repositorioUsuario = UsuarioRepositorio()
-                repositorioUsuario.configurar()
                 val repositorioDispositivo = DispositivoRepositorio()
-                repositorioDispositivo.configurar()
                 val repositorioComponente = ComponenteRepositorio()
-                repositorioComponente.configurar()
                 val repositorioLog = LogRepositorio()
-                repositorioLog.configurar()
                 val looca = Looca()
 
                 while(true){
