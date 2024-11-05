@@ -133,6 +133,13 @@
                 <artifactId>dotenv-kotlin</artifactId>
                 <version>6.4.1</version>
             </dependency>
+
+        <!-- Dependência do OkHttp para requisições HTTP -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.0</version>
+        </dependency>
     </dependencies>
 
 </project>

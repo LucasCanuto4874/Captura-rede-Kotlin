@@ -16,4 +16,14 @@ class UsuarioRepositorio {
         )
         return fkEmpresa
     }
+
+    fun buscarIdUsuarioLogado(email: String, senha: String): Int{
+        val idUsuario = jdbcTemplate.queryForObject("""
+         SELECT id FROM usuario WHERE email = ? AND senha = ?   
+        """, Int::class.java,
+            email,
+            senha)
+
+        return idUsuario
+    }
 }

@@ -2,12 +2,10 @@ package app
 
 import com.github.britooo.looca.api.core.Looca
 import dominio.Usuario
-import repositorio.ComponenteRepositorio
-import repositorio.DispositivoRepositorio
-import repositorio.LogRepositorio
-import repositorio.UsuarioRepositorio
 import java.io.File
 import config.DatabaseConfig
+import repositorio.*
+import java.util.Scanner
 
 open class Main {
     companion object {
@@ -17,6 +15,7 @@ open class Main {
                 val repositorioDispositivo = DispositivoRepositorio()
                 val repositorioComponente = ComponenteRepositorio()
                 val repositorioLog = LogRepositorio()
+                val repositorioAlerta = AlertasRepositorio()
                 val looca = Looca()
 
                 while(true){
@@ -46,22 +45,21 @@ open class Main {
                             login.setSenha(senha)
 
                             val fkEmpresa = repositorioUsuario.existeUsuario(email, senha)
+                            val idUsuario = repositorioUsuario.buscarIdUsuarioLogado(email, senha)
 
                             println("Buscando o ultimo ID do dispositivo")
-
-                            val ultimoIdMaquina = repositorioDispositivo.buscarUltimoDispositivo(fkEmpresa)
-
-
 
                             //Buscando o caminho do .env
                             val caminhoEnv = File("src/main/kotlin/.env")
 
-                            //setando o ultimo id da maquina dentro do arquivo .env
-                            caminhoEnv.appendText("\nCODIGO_MAQUINA=$ultimoIdMaquina")
-
                             val codigoMaquina = DatabaseConfig.getDotEnv()["CODIGO_MAQUINA"]
 
                             if(codigoMaquina == null){
+
+                                val ultimoIdMaquina = repositorioDispositivo.buscarUltimoDispositivo(fkEmpresa)
+
+                                //setando o ultimo id da maquina dentro do arquivo .env
+                                caminhoEnv.appendText("\nCODIGO_MAQUINA=$ultimoIdMaquina")
 
                                 print("Componente ainda não cadastrado!")
                                 println("Cadastrando componente na máquina: ${codigoMaquina}")
@@ -76,35 +74,47 @@ open class Main {
                                 }
                                 repositorioComponente.inserirComponente(ultimoIdMaquina,nome)
                             }
-                            else{
 
-                                val placaRede = looca.rede.grupoDeInterfaces.interfaces
-                                var nome = ""
-                                for (i in placaRede){
-                                    if (i.bytesRecebidos > 1 && i.bytesEnviados > 1){
-                                        nome = i.nome
+                                val alertasUsuario = repositorioAlerta.buscarAlertasUsuario(idUsuario, codigoMaquina.toInt())
+
+                                if(alertasUsuario.isNotEmpty()){
+
+                                    for(alerta in alertasUsuario){
+                                        println("""
+                                            Alertas Encontrados: ${alerta}
+                                        """.trimIndent())
+                                    }
+
+                                    val placaRede = looca.rede.grupoDeInterfaces.interfaces
+                                    var nome = ""
+                                    for (i in placaRede){
+                                        if (i.bytesRecebidos > 1 && i.bytesEnviados > 1){
+                                            nome = i.nome
+                                        }
+                                    }
+                                    println("Componente ja cadastrado!")
+                                    println("Começando a captura")
+                                    println("Capturando dados da placa")
+
+                                    val ultimoComponente = repositorioComponente.buscarUltimoComponente(codigoMaquina.toInt())
+
+                                    while (true){
+                                        val interfacePrincipal = placaRede.firstOrNull { it.nome.contains(nome) } ?: placaRede[0]
+                                        val bytesEnviados = interfacePrincipal.bytesEnviados
+                                        val bytesRecebidos = interfacePrincipal.bytesRecebidos
+                                        val bytesEnvConvertidos = bytesEnviados / (1024 * 1024) // Conversão para MB
+                                        val bytesReConvertidos = bytesRecebidos / (1024 * 1024) // Conversão para
+                                        repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, codigoMaquina.toInt())
+                                        repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, codigoMaquina.toInt())
+                                        println("Exibindo Bytes Recebidos: ${bytesEnvConvertidos}MB")
+                                        println("Exibindo Bytes Enviados: ${bytesReConvertidos}MB")
+                                        Thread.sleep(1000)
+
                                     }
                                 }
-                                println("Componente ja cadastrado!")
-                                println("Começando a captura")
-                                println("Capturando dados da placa")
-
-                                val ultimoComponente = repositorioComponente.buscarUltimoComponente(ultimoIdMaquina)
-
-                                while (true){
-                                    val interfacePrincipal = placaRede.firstOrNull { it.nome.contains(nome) } ?: placaRede[0]
-                                    val bytesEnviados = interfacePrincipal.bytesEnviados
-                                    val bytesRecebidos = interfacePrincipal.bytesRecebidos
-                                    val bytesEnvConvertidos = bytesEnviados / (1024 * 1024) // Conversão para MB
-                                    val bytesReConvertidos = bytesRecebidos / (1024 * 1024) // Conversão para
-                                    repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, ultimoIdMaquina)
-                                    repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, ultimoIdMaquina)
-                                    println("Exibindo Bytes Recebidos: ${bytesEnvConvertidos}MB")
-                                    println("Exibindo Bytes Enviados: ${bytesReConvertidos}MB")
-                                    Thread.sleep(1000)
-
+                                else{
+                                    println("Nenhum alerta cadastrado ")
                                 }
-                            }
                         }
                         2 ->{
                             break
@@ -113,5 +123,5 @@ open class Main {
                 }
 
             }
-        }
+    }
     }
