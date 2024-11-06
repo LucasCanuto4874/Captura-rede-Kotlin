@@ -5,7 +5,6 @@ import dominio.Usuario
 import java.io.File
 import config.DatabaseConfig
 import repositorio.*
-import java.util.Scanner
 
 open class Main {
     companion object {
@@ -29,61 +28,75 @@ open class Main {
             
         """.trimIndent())
 
-                    val opcao = readln().toInt()
-
+                    val opcao = readLine()?.toIntOrNull()
                     when(opcao){
 
                         1 ->{
                             val login = Usuario()
 
                             println("Digite seu email")
-                            val email = readln()
-                            login.setEmail(email)
-
-                            println("Digite sua senha")
-                            val senha = readln()
-                            login.setSenha(senha)
-
-                            val fkEmpresa = repositorioUsuario.existeUsuario(email, senha)
-                            val idUsuario = repositorioUsuario.buscarIdUsuarioLogado(email, senha)
-
-                            println("Buscando o ultimo ID do dispositivo")
-
-                            //Buscando o caminho do .env
-                            val caminhoEnv = File("src/main/kotlin/.env")
-
-                            val codigoMaquina = DatabaseConfig.getDotEnv()["CODIGO_MAQUINA"]
-
-                            if(codigoMaquina == null){
-
-                                val ultimoIdMaquina = repositorioDispositivo.buscarUltimoDispositivo(fkEmpresa)
-
-                                //setando o ultimo id da maquina dentro do arquivo .env
-                                caminhoEnv.appendText("\nCODIGO_MAQUINA=$ultimoIdMaquina")
-
-                                print("Componente ainda não cadastrado!")
-                                println("Cadastrando componente na máquina: ${codigoMaquina}")
-
-                                val placaRede = looca.rede.grupoDeInterfaces.interfaces
-                                var nome = ""
-                                for (i in placaRede){
-                                    if (i.bytesRecebidos > 1 && i.bytesEnviados > 1){
-                                        nome = i.nome
-                                        println(nome)
-                                    }
-                                }
-                                repositorioComponente.inserirComponente(ultimoIdMaquina,nome)
+                            val email = readLine()
+                            if (email != null) {
+                                login.setEmail(email)
                             }
 
-                                val alertasUsuario = repositorioAlerta.buscarAlertasUsuario(idUsuario, codigoMaquina.toInt())
+                            println("Digite sua senha")
+                            val senha = readLine()
+                            if (senha != null) {
+                                login.setSenha(senha)
+                            }
+
+                            if(senha != null && email != null){
+                                val fkEmpresa = repositorioUsuario.existeUsuario(email, senha)
+                                val idUsuario = repositorioUsuario.buscarIdUsuarioLogado(email, senha)
+
+                                println("Buscando o ultimo ID do dispositivo")
+
+                                //Buscando o caminho do .env
+                                val caminhoEnv = File("src/main/kotlin/.env")
+
+                                val codigoMaquina = DatabaseConfig.getDotEnv()["CODIGO_MAQUINA"]
+
+                                if(codigoMaquina == null){
+
+                                    val ultimoIdMaquina = repositorioDispositivo.buscarUltimoDispositivo(fkEmpresa)
+
+                                    //setando o ultimo id da maquina dentro do arquivo .env
+                                    caminhoEnv.appendText("\nCODIGO_MAQUINA=$ultimoIdMaquina")
+
+                                    println("Componente ainda não cadastrado!")
+                                    println("Cadastrando componente na máquina")
+
+                                    val placaRede = looca.rede.grupoDeInterfaces.interfaces
+                                    var nome = ""
+                                    for (i in placaRede){
+                                        if (i.bytesRecebidos > 1 && i.bytesEnviados > 1){
+                                            nome = i.nome
+                                            println(nome)
+                                        }
+                                    }
+                                    repositorioComponente.inserirComponente(ultimoIdMaquina,nome)
+                                }
+
+                                val idMaquina = repositorioDispositivo.buscarUltimoDispositivo(fkEmpresa)
+                                val alertasUsuario = repositorioAlerta.buscarAlertasUsuario(idUsuario, idMaquina)
 
                                 if(alertasUsuario.isNotEmpty()){
 
                                     for(alerta in alertasUsuario){
                                         println("""
-                                            Alertas Encontrados: ${alerta}
+                                            Alertas Encontrados:
+                                            Nome da Máquina: ${alerta.nomeMaquina}
+                                            Mínimo do Intervalo: ${alerta.minIntervalo}
+                                            Máximo do Intervalo: ${alerta.maxIntervalo}
+                                            Tipo do Componente: ${alerta.tipoComponente}
+                                            Tipo do Alerta: ${alerta.tipoAlerta}
                                         """.trimIndent())
                                     }
+                                }
+                                else{
+                                    println("Nenhum Alerta Cadastrado")
+                                }
 
                                     val placaRede = looca.rede.grupoDeInterfaces.interfaces
                                     var nome = ""
@@ -96,25 +109,73 @@ open class Main {
                                     println("Começando a captura")
                                     println("Capturando dados da placa")
 
-                                    val ultimoComponente = repositorioComponente.buscarUltimoComponente(codigoMaquina.toInt())
+                                    val ultimoComponente = repositorioComponente.buscarUltimoComponente(idMaquina)
 
                                     while (true){
+
                                         val interfacePrincipal = placaRede.firstOrNull { it.nome.contains(nome) } ?: placaRede[0]
                                         val bytesEnviados = interfacePrincipal.bytesEnviados
                                         val bytesRecebidos = interfacePrincipal.bytesRecebidos
                                         val bytesEnvConvertidos = bytesEnviados / (1024 * 1024) // Conversão para MB
-                                        val bytesReConvertidos = bytesRecebidos / (1024 * 1024) // Conversão para
-                                        repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, codigoMaquina.toInt())
-                                        repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, codigoMaquina.toInt())
-                                        println("Exibindo Bytes Recebidos: ${bytesEnvConvertidos}MB")
-                                        println("Exibindo Bytes Enviados: ${bytesReConvertidos}MB")
+                                        val bytesReConvertidos = bytesRecebidos / (1024 * 1024) // Conversão para MB
+                                        val alertaMinimoBytes = 1
+
                                         Thread.sleep(1000)
 
+                                        for (alerta in alertasUsuario){
+
+                                            if(alerta.tipoComponente == "Placa de Rede" && alerta.tipoAlerta == "Bytes Enviados e Recebidos(MB)"){
+                                                if(bytesEnvConvertidos < alerta.minIntervalo || bytesEnvConvertidos > alerta.maxIntervalo){
+                                                    println("Alerta: Bytes Enviados disparou o alerta!!!!")
+                                                    println("Alerta: Bytes Enviados capturado: $bytesEnvConvertidos")
+                                                    val alerta = 1
+                                                    repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
+                                                }
+                                                else if(bytesReConvertidos < alerta.minIntervalo || bytesReConvertidos > alerta.maxIntervalo){
+                                                    println("Alerta: Bytes Recebidos disparou o alerta!!!!")
+                                                    println("Alerta: Bytes Recebidos capturado: $bytesReConvertidos")
+                                                    val alerta = 1
+                                                    repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
+                                                }
+                                                else{
+                                                    val alerta = 0
+                                                    println("Bytes Enviados Capturado: $bytesEnvConvertidos MB")
+                                                    println("Bytes Recebidos Capturado: $bytesReConvertidos MB")
+                                                    repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
+                                                    repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
+                                                }
+                                            }
+                                            break
+                                        }
+
+                                        if(bytesEnvConvertidos < alertaMinimoBytes){
+                                            println("Alerta: Bytes Enviados disparou o alerta!!!!")
+                                            println("Alerta: Bytes Enviados capturado: $bytesEnvConvertidos")
+                                            var alerta = 1
+                                            repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
+                                        }
+                                        else{
+                                            val alerta = 0
+                                            println("Bytes Enviados Capturado: $bytesEnvConvertidos MB")
+                                            repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
+                                        }
+
+
+                                        if(bytesReConvertidos < alertaMinimoBytes){
+                                            println("Alerta: Bytes Recebidos disparou o alerta!!!!")
+                                            println("Alerta: Bytes Recebidos capturado: $bytesReConvertidos")
+                                            val alerta = 1
+                                            repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
+                                        }
+                                        else{
+                                            val alerta = 0
+                                            println("Bytes Recebidos Capturado: $bytesReConvertidos MB")
+                                            repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
+                                        }
+
                                     }
-                                }
-                                else{
-                                    println("Nenhum alerta cadastrado ")
-                                }
+                            }
+
                         }
                         2 ->{
                             break
