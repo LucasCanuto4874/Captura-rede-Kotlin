@@ -4,7 +4,10 @@ import com.github.britooo.looca.api.core.Looca
 import dominio.Usuario
 import java.io.File
 import config.DatabaseConfig
+import dominio.MensagemAlertas
 import repositorio.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 open class Main {
     companion object {
@@ -15,6 +18,7 @@ open class Main {
                 val repositorioComponente = ComponenteRepositorio()
                 val repositorioLog = LogRepositorio()
                 val repositorioAlerta = AlertasRepositorio()
+                val dominioMensagem = MensagemAlertas()
                 val looca = Looca()
 
                 while(true){
@@ -118,41 +122,54 @@ open class Main {
                                         val bytesRecebidos = interfacePrincipal.bytesRecebidos
                                         val bytesEnvConvertidos = bytesEnviados / (1024 * 1024) // Conversão para MB
                                         val bytesReConvertidos = bytesRecebidos / (1024 * 1024) // Conversão para MB
-                                        val alertaMinimoBytes = 1
-
-                                        Thread.sleep(1000)
+                                        val alertaMinimoBytes = 1000
 
                                         for (alerta in alertasUsuario){
 
                                             if(alerta.tipoComponente == "Placa de Rede" && alerta.tipoAlerta == "Bytes Enviados e Recebidos(MB)"){
-                                                if(bytesEnvConvertidos < alerta.minIntervalo || bytesEnvConvertidos > alerta.maxIntervalo){
+                                                if(bytesEnvConvertidos < alerta.minIntervalo && bytesEnvConvertidos > alerta.maxIntervalo){
                                                     println("Alerta: Bytes Enviados disparou o alerta!!!!")
                                                     println("Alerta: Bytes Enviados capturado: $bytesEnvConvertidos")
                                                     val alerta = 1
                                                     repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
-                                                }
-                                                else if(bytesReConvertidos < alerta.minIntervalo || bytesReConvertidos > alerta.maxIntervalo){
-                                                    println("Alerta: Bytes Recebidos disparou o alerta!!!!")
-                                                    println("Alerta: Bytes Recebidos capturado: $bytesReConvertidos")
-                                                    val alerta = 1
-                                                    repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
+
+                                                    //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
+                                                    dominioMensagem.alertaBytesEnviadosPersonalizado(bytesEnvConvertidos)
+
                                                 }
                                                 else{
                                                     val alerta = 0
                                                     println("Bytes Enviados Capturado: $bytesEnvConvertidos MB")
+                                                    repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
+                                                }
+
+                                                if(bytesReConvertidos < alerta.minIntervalo && bytesReConvertidos > alerta.maxIntervalo){
+                                                    println("Alerta: Bytes Recebidos disparou o alerta!!!!")
+                                                    println("Alerta: Bytes Recebidos capturado: $bytesReConvertidos")
+                                                    val alerta = 1
+                                                    repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
+
+                                                    //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
+                                                    dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
+                                                }
+                                                else{
+                                                    val alerta = 0
                                                     println("Bytes Recebidos Capturado: $bytesReConvertidos MB")
                                                     repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
-                                                    repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
                                                 }
                                             }
                                             break
                                         }
 
-                                        if(bytesEnvConvertidos < alertaMinimoBytes){
+                                        if(bytesEnvConvertidos <= alertaMinimoBytes){
                                             println("Alerta: Bytes Enviados disparou o alerta!!!!")
                                             println("Alerta: Bytes Enviados capturado: $bytesEnvConvertidos")
                                             var alerta = 1
                                             repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
+
+                                            //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
+                                            dominioMensagem.alertaBytesEnviadosPadraoSistema(bytesEnvConvertidos)
+
                                         }
                                         else{
                                             val alerta = 0
@@ -161,17 +178,22 @@ open class Main {
                                         }
 
 
-                                        if(bytesReConvertidos < alertaMinimoBytes){
+                                        if(bytesReConvertidos <= alertaMinimoBytes){
                                             println("Alerta: Bytes Recebidos disparou o alerta!!!!")
                                             println("Alerta: Bytes Recebidos capturado: $bytesReConvertidos")
                                             val alerta = 1
                                             repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
+
+                                            //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
+                                            dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
                                         }
                                         else{
                                             val alerta = 0
                                             println("Bytes Recebidos Capturado: $bytesReConvertidos MB")
                                             repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
                                         }
+
+                                        Thread.sleep(5000)
 
                                     }
                             }
