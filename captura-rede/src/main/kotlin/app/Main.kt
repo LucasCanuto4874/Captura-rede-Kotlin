@@ -122,8 +122,7 @@ open class Main {
                                         val bytesRecebidos = interfacePrincipal.bytesRecebidos
                                         val bytesEnvConvertidos = bytesEnviados / (1024 * 1024) // Conversão para MB
                                         val bytesReConvertidos = bytesRecebidos / (1024 * 1024) // Conversão para MB
-                                        val alertaMinimoBytes = 1000
-
+                                        val alertaMinimoBytes = 1
                                         for (alerta in alertasUsuario){
 
                                             if(alerta.tipoComponente == "Placa de Rede" && alerta.tipoAlerta == "Bytes Enviados e Recebidos(MB)"){
