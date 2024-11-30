@@ -9,7 +9,6 @@ object DatabaseConfig {
 
     private val dotenv = Dotenv.configure()
         .filename(".env")
-        .directory("src/main/kotlin/.env")
         .load()
 
     val jdbcTemplate: JdbcTemplate

@@ -4,6 +4,7 @@ import com.github.britooo.looca.api.core.Looca
 import dominio.Usuario
 import java.io.File
 import config.DatabaseConfig
+import config.CarregarEnv
 import dominio.MensagemAlertas
 import repositorio.*
 import java.time.LocalDateTime
@@ -13,6 +14,7 @@ open class Main {
     companion object {
         @JvmStatic fun main(args: Array<String>) {
 
+
                 val repositorioUsuario = UsuarioRepositorio()
                 val repositorioDispositivo = DispositivoRepositorio()
                 val repositorioComponente = ComponenteRepositorio()
@@ -20,6 +22,9 @@ open class Main {
                 val repositorioAlerta = AlertasRepositorio()
                 val dominioMensagem = MensagemAlertas()
                 val looca = Looca()
+                val carregarEnv = CarregarEnv()
+
+                print(carregarEnv.carregarArquivoEnv())
 
                 while(true){
 
@@ -57,7 +62,7 @@ open class Main {
                                 println("Buscando o ultimo ID do dispositivo")
 
                                 //Buscando o caminho do .env
-                                val caminhoEnv = File("src/main/kotlin/.env")
+                                val caminhoEnv = File(".env")
 
                                 val codigoMaquina = DatabaseConfig.getDotEnv()["CODIGO_MAQUINA"]
 
@@ -133,7 +138,7 @@ open class Main {
                                                     repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
 
                                                     //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
-                                                    dominioMensagem.alertaBytesEnviadosPersonalizado(bytesEnvConvertidos)
+//                                                    dominioMensagem.alertaBytesEnviadosPersonalizado(bytesEnvConvertidos)
 
                                                 }
                                                 else{
@@ -149,7 +154,7 @@ open class Main {
                                                     repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
 
                                                     //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
-                                                    dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
+//                                                    dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
                                                 }
                                                 else{
                                                     val alerta = 0
@@ -167,7 +172,7 @@ open class Main {
                                             repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
 
                                             //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
-                                            dominioMensagem.alertaBytesEnviadosPadraoSistema(bytesEnvConvertidos)
+//                                            dominioMensagem.alertaBytesEnviadosPadraoSistema(bytesEnvConvertidos)
 
                                         }
                                         else{
@@ -184,7 +189,7 @@ open class Main {
                                             repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
 
                                             //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
-                                            dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
+//                                            dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
                                         }
                                         else{
                                             val alerta = 0
