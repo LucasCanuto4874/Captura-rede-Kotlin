@@ -23,9 +23,6 @@ open class Main {
                 val dominioMensagem = MensagemAlertas()
                 val looca = Looca()
                 val carregarEnv = CarregarEnv()
-
-                print(carregarEnv.carregarArquivoEnv())
-
                 while(true){
 
                     print("""
