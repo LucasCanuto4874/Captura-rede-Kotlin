@@ -134,8 +134,8 @@ open class Main {
                                                     val alerta = 1
                                                     repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
 
-                                                    //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
-//                                                    dominioMensagem.alertaBytesEnviadosPersonalizado(bytesEnvConvertidos)
+//                                                    Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
+                                                    dominioMensagem.alertaBytesEnviadosPersonalizado(bytesEnvConvertidos)
 
                                                 }
                                                 else{
@@ -151,7 +151,7 @@ open class Main {
                                                     repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
 
                                                     //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
-//                                                    dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
+                                                    dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
                                                 }
                                                 else{
                                                     val alerta = 0
@@ -169,7 +169,7 @@ open class Main {
                                             repositorioLog.capturaBytesEnviados(bytesEnvConvertidos, ultimoComponente, idMaquina, alerta)
 
                                             //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
-//                                            dominioMensagem.alertaBytesEnviadosPadraoSistema(bytesEnvConvertidos)
+                                            dominioMensagem.alertaBytesEnviadosPadraoSistema(bytesEnvConvertidos)
 
                                         }
                                         else{
@@ -186,7 +186,7 @@ open class Main {
                                             repositorioLog.capturaBytesRecebidos(bytesReConvertidos, ultimoComponente, idMaquina, alerta)
 
                                             //Comente a função abaixo caso não tenha token do slack e queira testar a aplicação
-//                                            dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
+                                            dominioMensagem.alertaBytesRecebidosPersonalizado(bytesReConvertidos)
                                         }
                                         else{
                                             val alerta = 0
